@@ -1,0 +1,33 @@
+{
+  "name": "s3-bucket",
+  "version": "0.1.0",
+  "description": "Easily upload files to your AWS S3 Buckets",
+  "license": "MIT",
+  "repository": "https://github.com/AshikNesin/s3-bucket",
+  "author": {
+    "name": "Ashik Nesin",
+    "email": "mail@ashiknesin.com",
+    "url": "ashiknesin.com"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "test": "xo"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "s3",
+    "aws",
+    "file upload",
+    "upload"
+  ],
+  "dependencies": {
+    "aws-sdk": "^2.67.0"
+  },
+  "devDependencies": {
+    "xo": "^0.17.0"
+  }
+}
