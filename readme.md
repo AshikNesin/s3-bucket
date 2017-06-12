@@ -24,9 +24,9 @@ AWS_S3_REGION=value
 ```js
 const { getSignedUrl, uploadFile } = require('s3-bucket');
 
-// Get a signed URL for a file using which we can upload file from client
+// Get a signed URL for a file
 getSignedUrl({ Key, ContentType });
-//=> Objects which contains signedRequest URL
+//=> {signedRequest:'https://s3.ap-south-1.amazonaws.com/XYZ'}
 
 // Upload file to S3 Bucket
 uploadFile({ Key, filePath })

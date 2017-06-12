@@ -1,7 +1,6 @@
 'use strict';
 const fs = require('fs');
 const AWS = require('aws-sdk');
-const {fileStat} = require('./utils');
 
 const config = {
 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -64,6 +63,17 @@ const putObject = ({Key, Body, ContentLength, Bucket = BucketName}) => {
 		});
 	});
 };
+function fileStat(filePath) {
+	return new Promise(function (resolve, reject) {
+		fs.stat(filePath, function (err, stats) {
+			if (err) {
+				reject(err);
+			}
+
+			resolve(stats);
+		});
+	});
+}
 
 const uploadFile = ({filePath, Key}) => {
 	return new Promise(function (resolve, reject) {
