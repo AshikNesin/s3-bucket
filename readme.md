@@ -22,7 +22,13 @@ AWS_S3_REGION=value
 ## Usage
 
 ```js
-const { getSignedUrl, uploadFile } = require('s3-bucket');
+const {
+	getSignedUrl,
+	uploadFile ,
+	loadConfig,
+	updateConfig,
+
+} = require('s3-bucket');
 
 // Get a signed URL for a file
 getSignedUrl({ Key, ContentType });
@@ -32,7 +38,15 @@ getSignedUrl({ Key, ContentType });
 uploadFile({ Key, filePath })
 //=> {url: "http://xyz.s3.amazonaws.com/hello.txt"}
 
+// Load config from a JSON file
+loadConfig('./config.json')
+
+// Update AWS config programmatically
+updateConfig({region:'your-region'})
+
 ```
+
+Key → directory & it's file name (downloads/logo.png)
 
 ## License
 

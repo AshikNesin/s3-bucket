@@ -1,6 +1,6 @@
 {
   "name": "s3-bucket",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Easily upload files to your AWS S3 Buckets",
   "license": "MIT",
   "repository": "https://github.com/AshikNesin/s3-bucket",

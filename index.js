@@ -48,7 +48,6 @@ const putObject = ({Key, Body, ContentLength, Bucket = BucketName}) => {
 		ContentLength,
 		ACL: 'public-read'
 	};
-	console.log(params);
 	return new Promise(function (resolve, reject) {
 		S3.putObject(params, (error, data) => {
 			if (error) {
@@ -91,7 +90,17 @@ const uploadFile = ({filePath, Key}) => {
 	});
 };
 
+const updateConfig = config => {
+	AWS.config.update(config);
+}
+
+const loadConfig = filePath => {
+	AWS.config.loadFromPath(filePath)
+}
+
 module.exports = {
 	getSignedUrl,
-	uploadFile
+	uploadFile,
+	updateConfig,
+	loadConfig,
 };
