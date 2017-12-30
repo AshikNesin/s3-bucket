@@ -24,12 +24,13 @@ const getAllBuckets = promisify(S3.listBuckets).bind(S3);
 
 const getUploadUrl = customParams => {
 	// TODO: Throw error if Bucket, Key, ContentType is undefined.
-	const params = {
+	const defaultParams = {
 		Expires: 60,
 		ACL: 'public-read',
-		Bucket: BucketName,
-		...customParams
+		Bucket: BucketName
 	};
+	const params = Object.assign(defaultParams, customParams);
+
 	const getSignedUrlPromise = promisify(S3.getSignedUrl).bind(S3);
 	return new Promise((resolve, reject) => {
 		getSignedUrlPromise('putObject', params)
@@ -41,14 +42,13 @@ const getUploadUrl = customParams => {
 const uploadFile = customParams => {
 	// TODO: Throw error if  Bucket, filePath or Key is undefined
 	const {filePath} = customParams;
-
-	const params = {
+	const defaultParams = {
 		ACL: 'public-read',
 		Bucket: BucketName,
 		ContentLength: getFilesizeInBytes(filePath),
-		Body: fs.createReadStream(filePath),
-		...customParams
+		Body: fs.createReadStream(filePath)
 	};
+	const params = Object.assign(defaultParams, customParams);
 	delete params.filePath; // Else it will throw error in putObjectPromise
 	const {Bucket, Key} = params;
 
@@ -57,17 +57,18 @@ const uploadFile = customParams => {
 		putObjectPromise(params)
 			.then(response => {
 				const url = `https://${Bucket}.s3.amazonaws.com/${Key}`;
-				resolve({...response, url});
+				resolve(Object.assign({response, url}));
 			})
 			.catch(err => reject(err));
 	});
 };
 
-const listFiles = customConfig => {
-	const params = {
-		Bucket: customConfig.Bucket || BucketName,
-		...customConfig
+const listFiles = customParams => {
+	const defaultParams = {
+		Bucket: customParams.Bucket || BucketName
 	};
+	const params = Object.assign(defaultParams, customParams);
+
 	const listObjectsPromise = promisify(S3.listObjectsV2).bind(S3);
 	return new Promise((resolve, reject) => {
 		listObjectsPromise(params)
