@@ -1,6 +1,6 @@
 {
   "name": "s3-bucket",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple AWS S3 Wrapper 🔥",
   "license": "MIT",
   "repository": "https://github.com/AshikNesin/s3-bucket",
