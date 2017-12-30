@@ -1,6 +1,6 @@
 // Native
 const fs = require('fs');
-const {promisify} = require('util');
+const promisify = require('util.promisify');
 
 // Packages
 const AWS = require('aws-sdk');

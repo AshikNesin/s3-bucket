@@ -23,7 +23,8 @@
     "upload"
   ],
   "dependencies": {
-    "aws-sdk": "^2.67.0"
+    "aws-sdk": "^2.67.0",
+    "util.promisify": "^1.0.0"
   },
   "devDependencies": {
     "xo": "^0.17.0"
