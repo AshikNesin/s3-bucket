@@ -92,3 +92,4 @@ Temporary Items
 # End of https://www.gitignore.io/api/osx,node
 
 test.js
+example.js

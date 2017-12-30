@@ -15,17 +15,9 @@ const config = {
 	region: process.env.S3_BUCKET_REGION
 };
 
-const BucketName = process.env.S3_BUCKET_NAME;
+let BucketName = process.env.S3_BUCKET_NAME;
 
 const S3 = new AWS.S3(config);
-
-const updateCredentials = credentials => {
-	S3.config.update({
-		credentials: new AWS.Credentials(credentials)
-	});
-};
-
-const updateRegion = region => S3.config.update({region});
 
 // AWS S3 Docs → http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 const getAllBuckets = promisify(S3.listBuckets).bind(S3);
@@ -71,7 +63,18 @@ const uploadFile = customParams => {
 	});
 };
 
-const listFiles = promisify(S3.listObjectsV2).bind(S3);
+const listFiles = customConfig => {
+	const params = {
+		Bucket: customConfig.Bucket || BucketName,
+		...customConfig
+	};
+	const listObjectsPromise = promisify(S3.listObjectsV2).bind(S3);
+	return new Promise((resolve, reject) => {
+		listObjectsPromise(params)
+			.then(files => resolve(files))
+			.catch(err => reject(err));
+	});
+};
 
 const deleteFiles = customParams => {
 	const files = customParams.files.map(file => ({Key: file}));
@@ -89,12 +92,27 @@ const deleteFiles = customParams => {
 	});
 };
 
+const updateCredentials = credentials => {
+	S3.config.update({
+		credentials: new AWS.Credentials(credentials)
+	});
+};
+
+const updateRegion = region => S3.config.update({region});
+
+const updateBucketName = name => {
+	BucketName = name;
+};
+
 module.exports = {
-	updateCredentials,
-	updateRegion,
 	getAllBuckets,
 	getUploadUrl,
 	uploadFile,
 	listFiles,
-	deleteFiles
+	deleteFiles,
+	updateCredentials,
+	updateRegion,
+	updateBucketName,
+	S3
 };
+

@@ -1,22 +1,20 @@
 {
   "name": "s3-bucket",
-  "version": "0.2.0",
-  "description": "Easily upload files to your AWS S3 Buckets",
+  "version": "1.0.0",
+  "description": "Simple AWS S3 Wrapper 🔥",
   "license": "MIT",
   "repository": "https://github.com/AshikNesin/s3-bucket",
   "author": {
     "name": "Ashik Nesin",
     "email": "mail@ashiknesin.com",
-    "url": "ashiknesin.com"
+    "url": "https://ashiknesin.com"
   },
   "engines": {
     "node": ">=4"
   },
-  "scripts": {
-    "test": "xo && ava test.js"
-  },
   "files": [
-    "index.js"
+    "index.js",
+    "utils.js"
   ],
   "keywords": [
     "s3",
@@ -28,7 +26,6 @@
     "aws-sdk": "^2.67.0"
   },
   "devDependencies": {
-    "ava": "^0.24.0",
     "xo": "^0.17.0"
   }
 }
