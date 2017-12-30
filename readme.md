@@ -26,8 +26,7 @@ const {
 	getSignedUrl,
 	uploadFile ,
 	loadConfig,
-	updateConfig,
-
+	updateConfig
 } = require('s3-bucket');
 
 // Get a signed URL for a file
@@ -42,11 +41,28 @@ uploadFile({ Key, filePath })
 loadConfig('./config.json')
 
 // Update AWS config programmatically
+const config = {
+	credentials:
+}
 updateConfig({region:'your-region'})
 
 ```
 
+### updateConfig(config)
+```js
+
+    AWS.config.update({
+      credentials: new AWS.Credentials({
+        accessKeyId: accessKey,
+        secretAccessKey: secretKey,
+      }),
+    });
+```
+
 Key → directory & it's file name (downloads/logo.png)
+
+## TODO
+- Handle Missing credentials errors
 
 ## License
 

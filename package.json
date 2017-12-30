@@ -13,7 +13,7 @@
     "node": ">=4"
   },
   "scripts": {
-    "test": "xo"
+    "test": "xo && ava test.js"
   },
   "files": [
     "index.js"
@@ -28,6 +28,7 @@
     "aws-sdk": "^2.67.0"
   },
   "devDependencies": {
+    "ava": "^0.24.0",
     "xo": "^0.17.0"
   }
 }

@@ -1,106 +1,100 @@
-'use strict';
+// Native
 const fs = require('fs');
+const {promisify} = require('util');
+
+// Packages
 const AWS = require('aws-sdk');
 
+// Utilities
+const {getFilesizeInBytes} = require('./utils');
+
+// Load config from Environment Variables
 const config = {
-	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-	region: process.env.AWS_S3_REGION
+	accessKeyId: process.env.S3_BUCKET_ACCESS_KEY_ID,
+	secretAccessKey: process.env.S3_BUCKET_SECRET_ACCESS_KEY,
+	region: process.env.S3_BUCKET_REGION
 };
-const BucketName = process.env.AWS_S3_BUCKET_NAME;
+
+const BucketName = process.env.S3_BUCKET_NAME;
 
 const S3 = new AWS.S3(config);
 
-const getSignedUrl = ({
-	Key,
-	ContentType,
-	Bucket = BucketName,
-	Expires = 60,
-	ACL = 'public-read'
-}) => {
-	const params = {
-		Bucket,
-		Key,
-		ContentType,
-		Expires,
-		ACL
-	};
-	return new Promise(function (resolve, reject) {
-		S3.getSignedUrl('putObject', params, function (error, signedRequest) {
-			if (error) {
-				reject(error);
-			} else {
-				const response = {
-					signedRequest: signedRequest,
-					url: `http://${Bucket}.s3.amazonaws.com/${Key}`
-				};
-				resolve(response);
-			}
-		});
+const updateCredentials = credentials => {
+	S3.config.update({
+		credentials: new AWS.Credentials(credentials)
 	});
 };
 
-const putObject = ({Key, Body, ContentLength, Bucket = BucketName}) => {
+const updateRegion = region => S3.config.update({region});
+
+// AWS S3 Docs → http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
+const getAllBuckets = promisify(S3.listBuckets).bind(S3);
+
+const getUploadUrl = customParams => {
+	// TODO: Throw error if Bucket, Key, ContentType is undefined.
 	const params = {
-		Bucket,
-		Key,
-		Body,
-		ContentLength,
-		ACL: 'public-read'
+		Expires: 60,
+		ACL: 'public-read',
+		Bucket: BucketName,
+		...customParams
 	};
-	return new Promise(function (resolve, reject) {
-		S3.putObject(params, (error, data) => {
-			if (error) {
-				reject(error);
-			} else {
-				const response = {
-					url: `http://${Bucket}.s3.amazonaws.com/${Key}`,
-					data
-				};
-				resolve(response);
-			}
-		});
-	});
-};
-function fileStat(filePath) {
-	return new Promise(function (resolve, reject) {
-		fs.stat(filePath, function (err, stats) {
-			if (err) {
-				reject(err);
-			}
-
-			resolve(stats);
-		});
-	});
-}
-
-const uploadFile = ({filePath, Key}) => {
-	return new Promise(function (resolve, reject) {
-		fileStat(filePath)
-			.then(fileInfo => {
-				const bodyStream = fs.createReadStream(filePath);
-				return putObject({
-					Key,
-					Body: bodyStream,
-					ContentLength: fileInfo.size
-				});
-			})
-			.then(res => resolve(res))
+	const getSignedUrlPromise = promisify(S3.getSignedUrl).bind(S3);
+	return new Promise((resolve, reject) => {
+		getSignedUrlPromise('putObject', params)
+			.then(signedUrl => resolve({signedUrl}))
 			.catch(err => reject(err));
 	});
 };
 
-const updateConfig = config => {
-	AWS.config.update(config);
-}
+const uploadFile = customParams => {
+	// TODO: Throw error if  Bucket, filePath or Key is undefined
+	const {filePath} = customParams;
 
-const loadConfig = filePath => {
-	AWS.config.loadFromPath(filePath)
-}
+	const params = {
+		ACL: 'public-read',
+		Bucket: BucketName,
+		ContentLength: getFilesizeInBytes(filePath),
+		Body: fs.createReadStream(filePath),
+		...customParams
+	};
+	delete params.filePath; // Else it will throw error in putObjectPromise
+	const {Bucket, Key} = params;
+
+	const putObjectPromise = promisify(S3.putObject).bind(S3);
+	return new Promise((resolve, reject) => {
+		putObjectPromise(params)
+			.then(response => {
+				const url = `https://${Bucket}.s3.amazonaws.com/${Key}`;
+				resolve({...response, url});
+			})
+			.catch(err => reject(err));
+	});
+};
+
+const listFiles = promisify(S3.listObjectsV2).bind(S3);
+
+const deleteFiles = customParams => {
+	const files = customParams.files.map(file => ({Key: file}));
+	const params = {
+		Bucket: BucketName,
+		Delete: {
+			Objects: files
+		}
+	};
+	const deleteObjectsPromise = promisify(S3.deleteObjects).bind(S3);
+	return new Promise((resolve, reject) => {
+		deleteObjectsPromise(params)
+			.then(response => resolve(response))
+			.catch(err => reject(err));
+	});
+};
 
 module.exports = {
-	getSignedUrl,
+	updateCredentials,
+	updateRegion,
+	getAllBuckets,
+	getUploadUrl,
 	uploadFile,
-	updateConfig,
-	loadConfig,
+	listFiles,
+	deleteFiles
 };
