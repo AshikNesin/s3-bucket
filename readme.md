@@ -201,6 +201,7 @@ Setting our S3 region on the fly
 
 ## TODO
 - Handle Missing credentials errors
+- File Upload Progress
 
 ## License
 
