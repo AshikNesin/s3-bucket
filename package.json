@@ -1,6 +1,6 @@
 {
   "name": "s3-bucket",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Simple AWS S3 Wrapper 🔥",
   "license": "MIT",
   "repository": "https://github.com/AshikNesin/s3-bucket",
@@ -23,7 +23,7 @@
     "upload"
   ],
   "dependencies": {
-    "aws-sdk": "^2.67.0",
+    "aws-sdk": "^2.244.1",
     "util.promisify": "^1.0.0"
   },
   "devDependencies": {
